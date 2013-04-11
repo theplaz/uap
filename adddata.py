@@ -2,6 +2,7 @@ import psycopg2
 import random
 import math
 import datetime
+import pprint
 
 conn = psycopg2.connect("host='localhost' dbname='test' user='postgres' password='foo'")
 cur = conn.cursor()
@@ -17,12 +18,10 @@ broswers = [['Firefox 18.0.0', datetime.date(2013, 1, 8)],
            ['Firefox 20.0.0', datetime.date(2013, 4, 2)]]
 
 
-for i in range(1):
+for i in range(1000):
     browser = broswers[random.randint(0,len(broswers)-1)]
     print browser
-    random = random.randint(0,60)
-    print random
-    dateadd = 1*math.exp((-1/30)*random)
+    dateadd = random.expovariate(5)*100
     print dateadd
     dateadd = datetime.timedelta(days=dateadd)
     print dateadd
@@ -31,11 +30,11 @@ for i in range(1):
     print date
     print type(date)
     
-    query = "INSERT INTO testdata (browser, date) VALUES (%s, %s)", (browser[0], date.strftime("%d/%m/%y"))
-    
-    cur.execute(query)
+    cur.execute("INSERT INTO testdata (browser, date) VALUES (%s, %s)", (browser[0], date.strftime("%m/%d/%y")))
 
-
+cur.execute("SELECT * FROM testdata;")
+records = cur.fetchall()
+pprint.pprint(records)
 
 conn.commit()
 cur.close()
