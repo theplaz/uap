@@ -37,9 +37,7 @@ def get_pairs_browser():
         if len(record) >= 2:
             t = record[0][2], record[len(record)-1][2]
             result.append(t)
-    answer = []
-    answer.append(result)
-    return answer
+    return result
 
 def create_db():
     cur.execute("CREATE TABLE IF NOT EXISTS testdata2 (id serial PRIMARY KEY, date TIMESTAMP, browser VARCHAR, userid INT);")

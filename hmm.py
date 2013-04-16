@@ -28,6 +28,9 @@ print
 sequence = [('Firefox 18.0.0', 'Firefox 18.0.1')]
 print sequence
 
+test = [('Firefox 18.0.0', 'Firefox 18.0.1')]
+sequence = [(t, None) for t in test]
+
 #print tagger.test(seq[10:20])
 
 print('Testing with state sequence', sequence)
