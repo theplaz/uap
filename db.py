@@ -16,7 +16,10 @@ def create_cur():
 def get_states():
     cur.execute("SELECT DISTINCT browser FROM testdata2")
     records = cur.fetchall()
-    return records
+    result = []
+    for record in records:
+        result.append(record[0])
+    return result
 
 def get_pairs():
     result = []
@@ -31,11 +34,12 @@ def get_pairs_browser():
     for i in range(1, 500):
         cur.execute("SELECT * FROM testdata2 WHERE userid = "+str(i), str(i))
         record = cur.fetchall()
-        user = []
-        for row in record:
-            user.append(row[2])
-        result.append(user)
-    return result
+        if len(record) >= 2:
+            t = record[0][2], record[len(record)-1][2]
+            result.append(t)
+    answer = []
+    answer.append(result)
+    return answer
 
 def create_db():
     cur.execute("CREATE TABLE IF NOT EXISTS testdata2 (id serial PRIMARY KEY, date TIMESTAMP, browser VARCHAR, userid INT);")

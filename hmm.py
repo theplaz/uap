@@ -11,25 +11,33 @@ states = db.get_states()
 model = nltk.tag.HiddenMarkovModelTrainer(symbols=symbols, states=states)
 print model
 
+print 
+
 seq = db.get_pairs_browser()
-print seq
-tagger = model.train_supervised(seq)
+tagger = model.train_supervised(seq[0:10])
 print tagger
+print('symbols =', tagger._symbols)
+print('states =', tagger._states)
+print('transition =', tagger._transitions)
+print('outputs =', tagger._outputs)
+print('priors =', tagger._priors)
 
-nltk.tag.load_pos(1)
 
-for test in [['Firefox 18.0.0', 'Firefox 18.0.1']]:
+print 
 
-  sequence = [(t, None) for t in test]
+sequence = [('Firefox 18.0.0', 'Firefox 18.0.1')]
+print sequence
 
-  print('Testing with state sequence', test)
-  print('probability =', tagger.probability(sequence))
-  print('tagging =    ', tagger.tag([word for (word,tag) in sequence]))
-  print('p(tagged) =  ', tagger.probability(sequence))
-  print('H =          ', tagger.entropy(sequence))
-  print('H_exh =      ', tagger._exhaustive_entropy(sequence))
-  print('H(point) =   ', tagger.point_entropy(sequence))
-  print('H_exh(point)=', tagger._exhaustive_point_entropy(sequence))
+#print tagger.test(seq[10:20])
+
+print('Testing with state sequence', sequence)
+print('probability =', tagger.probability(sequence))
+print('tagging =    ', tagger.tag([word for (word,tag) in sequence]))
+print('p(tagged) =  ', tagger.probability(sequence))
+print('H =          ', tagger.entropy(sequence))
+print('H_exh =      ', tagger._exhaustive_entropy(sequence))
+print('H(point) =   ', tagger.point_entropy(sequence))
+print('H_exh(point)=', tagger._exhaustive_point_entropy(sequence))
 
 '''
 def pd(values, samples):
