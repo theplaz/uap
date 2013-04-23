@@ -1,0 +1,4 @@
+ORIG_DB_SERVER = 'localhost'
+ORIG_DB_USER = 'panopticlick'
+ORIG_DB_PASS = 'panopticlick'
+ORIG_TABLE_NAME = 'panopticlick'
