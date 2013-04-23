@@ -19,9 +19,6 @@ for line in f:
                                                  "ua_h, ft_h, ha_h, pi_h) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 
                        (row['js'], row['cookie_enabled'], row['user_agent'], row['http_accept'], row['plugins'], row['fonts'], row['timezone'], 
                         row['video'], row['signature'], row['count'], row['supercookies'], row['ua_h'], row['ft_h'], row['ha_h'], row['pi_h']));
-           #db.orig_cur.execute("SELECT * FROM fingerprint;")
-           #data = db.orig_cur.fetchall()
-           #print data
            row = {}
         except mdb.Error, e:
             print "Error %d: %s" % (e.args[0],e.args[1])
@@ -38,4 +35,5 @@ for line in f:
         row[first] = last
         
         
+db.orig_conn.commit()
 db.close_orig_db_conn()
