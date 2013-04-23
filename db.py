@@ -10,5 +10,16 @@ def create_db_conn():
       cur = conn.cursor()
   return cur
 
+def create_orig_db_conn():
+  if 'orig_conn' not in globals():
+      global orig_conn
+      orig_conn = mdb.connect(config.ORIG_DB_SERVER, config.ORIG_DB_USER, config.ORIG_DB_PASS, config.ORIG_TABLE_NAME)
+      global orig_cur
+      orig_cur = orig_conn.cursor()
+  return orig_cur
+
 def close_db_conn():
     conn.close()
+
+def close_orig_db_conn():
+    orig_conn.close()

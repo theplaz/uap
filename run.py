@@ -5,10 +5,10 @@ import db
 import markovdb
 import markov
 
-conn = db.create_db_conn()
+db.create_db_conn()
 
 states = markovdb.get_states()
-data = markovdb.get_pairs_browser(conn)
+data = markovdb.get_pairs_browser()
 
 markov = markov.Markov(states, data)
 
