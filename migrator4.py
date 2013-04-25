@@ -6,7 +6,7 @@ db.create_orig_db_conn()
 
 #make markov prob
 
-#select software
+#select migration totals
 db.cur.execute("SELECT * FROM migration_total;")
 migration_pairs = db.cur.fetchall()
 print migration_pairs
