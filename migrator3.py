@@ -13,12 +13,10 @@ print software_types
 
 #load all existing migrations
 db.cur.execute("SELECT * FROM migration;")
-numrows = int(db.cur.rowcount)
+migrations = db.cur.fetchall()
 
 
-#for i in range(numrows):
-for i in range(1):
-    migration = db.cur.fetchone()
+for migration in migrations:
     print migration
     #cookie_id migration[0]
     #visit_from migration[1]
@@ -29,28 +27,48 @@ for i in range(1):
     #SELECT all the software about this migration
     db.cur.execute("SELECT * FROM `software` WHERE visit_id = %s;", migration[1])
     softwares1 = db.cur.fetchall()
+    print softwares1
+    print '---'
     db.cur.execute("SELECT * FROM `software` WHERE visit_id = %s;", migration[2])
     softwares2 = db.cur.fetchall()
-    
-    #TODO: how deal with not present?
+    print softwares2
     
     #for each software we are looking at
     for software in software_types:
-         
+        #print software
+        software_type = software[0]
+        software_name = software[1]
+        
         #locate it in the bundle
         #find what version it is
+        software_version1 = 'None'
+        for software1 in softwares1:
+            if software1[2] == software_type and software1[3] == software_name:
+                print 'found1'
+                print software1
+                software_version1 = software1[4]
+                break
+            
+        software_version2 = 'None'
+        for software2 in softwares2:
+            if software2[2] == software_type and software2[3] == software_name:
+                print 'found2'
+                software_version2 = software2[4]
+                break
+        #print software_version1
+        #print software_version2
         
         #insert #(x0=a AND x1=b)
         db.cur.execute("INSERT INTO migration_total (type, name, version1, version2, count) "+
                                                      "VALUES (%s, %s, %s, %s, 1) "+
                                                      "ON DUPLICATE KEY UPDATE count=count+1;",
-                                                     (type, name, version1, version2));
+                                                     (software_type, software_name, software_version1, software_version2));
     
         #insert #(x1=b)
         db.cur.execute("INSERT INTO software_total (type, name, version, count) "+
                                                      "VALUES (%s, %s, %s, 1) "+
                                                      "ON DUPLICATE KEY UPDATE count=count+1;",
-                                                     (type, name, version));
+                                                     (software_type, software_name, software_version2));
         
 db.conn.commit()
 db.close_db_conn()
