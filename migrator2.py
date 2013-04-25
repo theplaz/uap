@@ -35,9 +35,11 @@ for i in range(1):
                         
                         
                         #count fonts added
+                        #TODO
                         fonts_added = 0
                         
                         #count fonts removed
+                        #TODO
                         fonts_removed = 0
                         
                         #insert into table
