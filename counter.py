@@ -3,7 +3,7 @@ import db
 db.create_db_conn()
 
 #load all software versions
-db.orig_cur.execute("SELECT tag, COUNT(*)"+
+db.cur.execute("SELECT tag, COUNT(*)"+
 "FROM ("+
     "SELECT type AS tag "+
     "UNION ALL "+
@@ -13,7 +13,7 @@ db.orig_cur.execute("SELECT tag, COUNT(*)"+
 ") AS X (tag) "+
 "GROUP BY tag "+
 "ORDER BY COUNT(*) DESC")
-rows = db.orig_cur.fetchall()
+rows = db.cur.fetchall()
 #untested
 
 for software in rows:

@@ -28,6 +28,7 @@ for i in range(1):
     print fingerprint
     print visit
     
+    '''
     #load into new table
     #drop count = fingerprint[8]
     db.cur.execute("INSERT INTO visit (id, cookie_id, js, cookie_enabled, user_agent, http_accept, plugins, fonts, timezone, video, "+
@@ -38,7 +39,7 @@ for i in range(1):
                         fingerprint[14], visit[3], visit[4], visit[5]));
                         
     print 'added visit: '+str(visit[0])
-    
+    '''
     
     #load software version table
     #load user agent = fingerprint[2]
@@ -51,31 +52,40 @@ for i in range(1):
             useragent.append(agent.strip())
     print useragent
     
+    for agent in useragent:
     #match browsers
+        if 'Firefox' in agent:
+            pass
         #insert into software table
+        
+        
+    #match os
+    
+    #match lang
     
     #look at plugins = fingerprint[4]
     #print fingerprint[4]
     plugins = re.split("Plugin [0-9]+\:", fingerprint[4])
     for plugin in plugins:
-        print '--'
+        #print '--'
         plugin = plugin.strip()
-        print plugin
         parts = plugin.split(';')
-        #print parts
         #split name and version info out
-        #name is part[0]
-        #name version is part[1]
         if len(parts) > 2:
-            print parts[0].strip()
-            print parts[1].strip()
-            #TODO: pull out version #
+            name = parts[0].strip()
+            version = parts[1].strip() #this really should be version, but EFF didn't store version #!
+            #print name
+            #print version
+            
             #load into software table
+            db.cur.execute("INSERT IGNORE INTO software (visit_id, cookie_id, type, name, version) "+
+                            "VALUES (%s, %s, %s, %s, %s)", 
+                            (visit[0], visit[1], 'plugin', name, version));
+            #print 'added software to db'
         else:
             print 'error'
             print parts
             
-
     
 db.conn.commit()
 db.close_db_conn()

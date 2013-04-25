@@ -16,7 +16,7 @@ for i in range(1):
     user = db.orig_cur.fetchone()
     print user[0].strip()
     
-    if user[0].strip() != "no cookies":
+    if user[0].strip() != "no cookie":
     
         db.cur.execute("SELECT * FROM visit WHERE cookie_id = %s;", user[0].strip())
         fingerprints = db.cur.fetchall()
@@ -42,11 +42,10 @@ for i in range(1):
                         #TODO
                         fonts_removed = 0
                         
-                        #insert into table
+                        #insert migration into table
                         db.cur.execute("INSERT INTO migration (cookie_id, visit_from, visit_to, fonts_added, fonts_removed) "+
                                                      "VALUES (%s, %s, %s, %s, %s)", 
                            (user[0].strip(), fingerprint1[0], fingerprint2[0], fonts_added, fonts_removed));
-                            
                         print 'added migration for user: '+str(user[0])
                     else:
                         print 'less than an hour'

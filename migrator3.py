@@ -16,7 +16,6 @@ db.cur.execute("SELECT * FROM migration;")
 numrows = int(db.cur.rowcount)
 
 
-
 #for i in range(numrows):
 for i in range(1):
     migration = db.cur.fetchone()
@@ -32,6 +31,8 @@ for i in range(1):
     softwares1 = db.cur.fetchall()
     db.cur.execute("SELECT * FROM `software` WHERE visit_id = %s;", migration[2])
     softwares2 = db.cur.fetchall()
+    
+    #TODO: how deal with not present?
     
     #for each software we are looking at
     for software in software_types:
