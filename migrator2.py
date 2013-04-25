@@ -18,7 +18,7 @@ for i in range(1):
     
     if user[0].strip() != "no cookie":
     
-        db.cur.execute("SELECT * FROM visit WHERE cookie_id = %s;", user[0].strip())
+        db.cur.execute("SELECT * FROM visit WHERE cookie_id = %s ORDER BY timestamp DESC;", user[0].strip())
         fingerprints = db.cur.fetchall()
         print len(fingerprints)
         

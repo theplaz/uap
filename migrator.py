@@ -8,12 +8,12 @@ db.create_orig_db_conn()
 
 #load all existing visits
 db.orig_cur.execute("SELECT id, cookie_id, signature, ip, ip34, timestamp FROM cookies;")
-numrows = int(db.orig_cur.rowcount)
+visits = db.orig_cur.fetchall()
 
-for i in range(numrows):
-#for i in range(1):
-    visit = db.orig_cur.fetchone()
+for visit in visits:
     print visit
+    if visit == None:
+        break
     print visit[2].strip()
     visit_id = visit[0]
     cookie_id = visit[1].strip()
