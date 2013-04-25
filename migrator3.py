@@ -7,7 +7,6 @@ db.create_orig_db_conn()
 #count migrations
 
 #select software
-#
 db.cur.execute("SELECT DISTINCT type, name FROM `software`;")
 software_types = db.cur.fetchall()
 print software_types
@@ -40,12 +39,11 @@ for i in range(1):
         #locate it in the bundle
         #find what version it is
         
-        
         #insert #(x0=a AND x1=b)
-        db.cur.execute("INSERT INTO migration_total (type1, name1, version1, type2, name2, version2, count) "+
-                                                     "VALUES (%s, %s, %s, %s, %s, %s, 1) "+
+        db.cur.execute("INSERT INTO migration_total (type, name, version1, version2, count) "+
+                                                     "VALUES (%s, %s, %s, %s, 1) "+
                                                      "ON DUPLICATE KEY UPDATE count=count+1;",
-                                                     (type1, name1, version1, type2, name2, version2));
+                                                     (type, name, version1, version2));
     
         #insert #(x1=b)
         db.cur.execute("INSERT INTO software_total (type, name, version, count) "+
