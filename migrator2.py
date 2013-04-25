@@ -1,5 +1,6 @@
 import db
 import re
+import fontscompare
 
 db.create_db_conn()
 db.create_orig_db_conn()
@@ -8,17 +9,16 @@ db.create_orig_db_conn()
 
 #load all existing visits
 db.orig_cur.execute("SELECT DISTINCT cookie_id FROM cookies;")
-numrows = int(db.orig_cur.rowcount)
+users = db.orig_cur.fetchall()
 
 
-#for i in range(numrows):
-for i in range(1):
-    user = db.orig_cur.fetchone()
+for user in users:
+    print user
     print user[0].strip()
     
     if user[0].strip() != "no cookie":
     
-        db.cur.execute("SELECT * FROM visit WHERE cookie_id = %s ORDER BY timestamp DESC;", user[0].strip())
+        db.cur.execute("SELECT * FROM visit WHERE cookie_id = %s ORDER BY timestamp ASC;", user[0].strip())
         fingerprints = db.cur.fetchall()
         print len(fingerprints)
         
@@ -33,14 +33,7 @@ for i in range(1):
                     print fingerprint2[18]
                     if (fingerprint2[18] - fingerprint1[18]) > (60*60):
                         
-                        
-                        #count fonts added
-                        #TODO
-                        fonts_added = 0
-                        
-                        #count fonts removed
-                        #TODO
-                        fonts_removed = 0
+                        [fonts_added, fonts_removed] = fontscompare.fontscompare(fingerprint1[7], fingerprint2[7])
                         
                         #insert migration into table
                         db.cur.execute("INSERT INTO migration (cookie_id, visit_from, visit_to, fonts_added, fonts_removed) "+
@@ -50,7 +43,8 @@ for i in range(1):
                     else:
                         print 'less than an hour'
                 i+=1
-
+    else:
+        print "no cookie so skip"
     
 db.conn.commit()
 db.close_db_conn()
