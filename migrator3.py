@@ -18,11 +18,12 @@ migrations = db.cur.fetchall()
 
 for migration in migrations:
     print migration
-    cookie_id = migration[0]
-    visit_from = migration[1]
-    visit_to = migration[2]
-    fonts_added = migration[3]
-    fonts_removed = migration[4]
+    migration_id = migration[0]
+    cookie_id = migration[1]
+    visit_from = migration[2]
+    visit_to = migration[3]
+    fonts_added = migration[4]
+    fonts_removed = migration[5]
     
     #SELECT all the software about this migration
     db.cur.execute("SELECT * FROM `software` WHERE visit_id = %s;", visit_from)
