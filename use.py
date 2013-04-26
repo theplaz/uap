@@ -2,6 +2,7 @@ import array
 import numpy as np
 import pprint
 import db
+import fontscompare
 
 db.create_db_conn()
 
@@ -64,6 +65,7 @@ def find_original_visit(visit_to):
                     #look up software total #(x1=b)
                     db.cur.execute("SELECT count FROM software_total WHERE type = %s AND name = %s AND version = %s;", (type, name, version2));
                     software_total = db.cur.fetchone()
+                    print software_total
                     count_Pa = software_total[0]
                     #print count_Pa
                     
@@ -81,6 +83,37 @@ def find_original_visit(visit_to):
                 visit_from_P_value *= Pba_laplace
             
             #font check
+            #(is this the right way?)
+            [fonts_added, fonts_removed] = fontscompare.fontscompare(visit_from[7], visit_to[7])
+            
+            if fonts_added is not None and fonts_removed is not None:
+                #check how popular those fonts are... #(fonts_added b/w rows)/#(rows)
+                #counts rows total
+                db.cur.execute("SELECT COUNT(*) FROM migration;");
+                migration_count = db.cur.fetchone()
+                migration_count = migration_count[0]
+                print migration_count
+                
+                #count # rows with that add
+                db.cur.execute("SELECT COUNT(*) FROM font_total WHERE type = 'added' AND number = %s;", fonts_added);
+                fonts_added_count = db.cur.fetchone()
+                fonts_added_count= fonts_added_count[0]
+                print fonts_added_count
+                
+                #count # rows with that removed
+                db.cur.execute("SELECT COUNT(*) FROM font_total WHERE type = 'removed' AND number = %s;", fonts_removed);
+                fonts_removed_count = db.cur.fetchone()
+                fonts_removed_count= fonts_removed_count[0]
+                print fonts_removed_count
+                
+                fonts_added_prob = fonts_added_count / float(migration_count)
+                print fonts_added_prob
+                visit_from_P_value *= fonts_added_prob
+                
+                fonts_removed_prob = fonts_removed_count / float(migration_count)
+                print fonts_removed_prob
+                visit_from_P_value *= fonts_removed_prob
+            
             
             #any other ones?
             

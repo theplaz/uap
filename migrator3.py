@@ -70,7 +70,17 @@ for migration in migrations:
                                                      "VALUES (%s, %s, %s, 1) "+
                                                      "ON DUPLICATE KEY UPDATE count=count+1;",
                                                      (software_type, software_name, software_version2));
-        
+                                                     
+    #deal with fonts
+    db.cur.execute("INSERT INTO font_total (type, number, count) "+
+                                                     "VALUES (%s, %s, 1) "+
+                                                     "ON DUPLICATE KEY UPDATE count=count+1;",
+                                                     ('added', fonts_added));
+                                                     
+    db.cur.execute("INSERT INTO font_total (type, number, count) "+
+                                                     "VALUES (%s, %s, 1) "+
+                                                     "ON DUPLICATE KEY UPDATE count=count+1;",
+                                                     ('removed', fonts_removed));
 db.conn.commit()
 db.close_db_conn()
 db.close_orig_db_conn()
