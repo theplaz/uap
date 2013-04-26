@@ -11,8 +11,8 @@ db.cur.execute("SELECT DISTINCT type, name FROM `software`;")
 software_types = db.cur.fetchall()
 print software_types
 
-#load all existing migrations
-db.cur.execute("SELECT * FROM migration;")
+#load all migrations we will use to train from
+db.cur.execute("SELECT * FROM migration WHERE train = 1;")
 migrations = db.cur.fetchall()
 
 

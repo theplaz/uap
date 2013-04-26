@@ -1,5 +1,6 @@
 import db
 import re
+import random
 import fontscompare
 
 db.create_db_conn()
@@ -33,12 +34,20 @@ for user in users:
                     print fingerprint2[18]
                     if (fingerprint2[18] - fingerprint1[18]) > (60*60):
                         
+                        #calculate fonts
                         [fonts_added, fonts_removed] = fontscompare.fontscompare(fingerprint1[7], fingerprint2[7])
                         
+                        #train or test set?
+                        rand = random.randint(1,4)
+                        if rand <= 3:
+                            train = 1
+                        else:
+                            train = 0
+                        
                         #insert migration into table
-                        db.cur.execute("INSERT INTO migration (cookie_id, visit_from, visit_to, fonts_added, fonts_removed) "+
-                                                     "VALUES (%s, %s, %s, %s, %s)", 
-                           (user[0].strip(), fingerprint1[0], fingerprint2[0], fonts_added, fonts_removed));
+                        db.cur.execute("INSERT INTO migration (cookie_id, visit_from, visit_to, fonts_added, fonts_removed, train) "+
+                                                     "VALUES (%s, %s, %s, %s, %s, %s)", 
+                           (user[0].strip(), fingerprint1[0], fingerprint2[0], fonts_added, fonts_removed, train));
                         print 'added migration for user: '+str(user[0])
                     else:
                         print 'less than an hour'
