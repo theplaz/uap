@@ -58,9 +58,11 @@ for migration in migrations:
     
     #insert
     db.cur.execute("INSERT INTO tested (migration_id, result_visit_id, correct, prob) "+
-                                                     "VALUES (%s, %s, %s, %s)",
-                                                     (migration_id, result_visit_id, correct_bit, prob));
-    
+                                                     "VALUES (%s, %s, %s, %s) "+
+                                                     "ON DUPLICATE KEY UPDATE result_visit_id = %s, correct = %s, prob = %s;",
+                                                     (migration_id, result_visit_id, correct_bit, prob, result_visit_id, correct_bit, prob));
+    db.conn.commit()
+    db.close_db_conn()
     exit()
 
 db.close_db_conn()
