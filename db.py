@@ -48,6 +48,7 @@ def close_orig_db_conn():
     
 ###### Specific Methods #####
 def add_software(visit_id, cookie_id, type, name, version):
+    """Insert a software version record into the 'software' table"""
     cur.execute("INSERT IGNORE INTO software (visit_id, cookie_id, type, name, version) "+
                     "VALUES (%s, %s, %s, %s, %s)", 
                     (visit_id, cookie_id, type, name, version));
