@@ -83,6 +83,7 @@ def find_original_visit(visit_to):
                 visit_from_P_value *= Pba_laplace
             
             #font check
+            '''
             #(is this the right way?)
             [fonts_added, fonts_removed] = fontscompare.fontscompare(visit_from[7], visit_to[7])
             
@@ -113,7 +114,7 @@ def find_original_visit(visit_to):
                 fonts_removed_prob = fonts_removed_count / float(migration_count)
                 print fonts_removed_prob
                 visit_from_P_value *= fonts_removed_prob
-            
+            '''
             
             #any other ones?
             
