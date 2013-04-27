@@ -1,3 +1,5 @@
+#import the example text file from pde
+
 import db
 
 f = open('fingerprint-eg.txt', 'r')

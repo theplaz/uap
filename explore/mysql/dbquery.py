@@ -1,5 +1,6 @@
-import db
+#Run a query on the db
 
+import db
 
 db.create_orig_db_conn();
 

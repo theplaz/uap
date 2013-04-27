@@ -1,10 +1,19 @@
+"""
+This is the first step in the process to import the EFF database into my database.
+
+In this file, we load all of the visits (from the 'cookies' and 'fingerprint' EFF tables) into a single 'fingerprint' table in my new migration-tuned db.
+
+
+Author: Michael Plasmeier http://theplaz.com
+Date: April 2013
+License: CC-BY-SA-NC 2.5
+"""
+
 import db
 import re
 
 db.create_db_conn()
 db.create_orig_db_conn()
-
-#process fingerprints aka visits
 
 #load all existing visits
 db.orig_cur.execute("SELECT id, cookie_id, signature, ip, ip34, timestamp FROM cookies;")
