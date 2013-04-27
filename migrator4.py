@@ -6,8 +6,19 @@ db.create_orig_db_conn()
 
 #make markov prob
 
+#pagination
+if len(sys.argv) == 3:
+    start = sys.argv[1]
+    num_records = sys.argv[2]
+elif len(sys.argv) == 2:
+    start = sys.argv[1]
+    num_records = onfig.LARGE_NUM
+else:
+    start = 0
+    num_records = config.LARGE_NUM
+
 #select migration totals
-db.cur.execute("SELECT * FROM migration_total;")
+db.cur.execute("SELECT * FROM migration_total LIMIT "+str(int(start))+", "+str(int(num_records))+";")
 migration_pairs = db.cur.fetchall()
 print migration_pairs
 

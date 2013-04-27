@@ -8,8 +8,19 @@ db.create_orig_db_conn()
 
 #process users aka migrations
 
+#pagination
+if len(sys.argv) == 3:
+    start = sys.argv[1]
+    num_records = sys.argv[2]
+elif len(sys.argv) == 2:
+    start = sys.argv[1]
+    num_records = onfig.LARGE_NUM
+else:
+    start = 0
+    num_records = config.LARGE_NUM
+
 #load all existing visits
-db.orig_cur.execute("SELECT DISTINCT cookie_id FROM cookies;")
+db.orig_cur.execute("SELECT DISTINCT cookie_id FROM cookies LIMIT "+str(int(start))+", "+str(int(num_records))+";")
 users = db.orig_cur.fetchall()
 
 

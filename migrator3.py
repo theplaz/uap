@@ -11,8 +11,19 @@ db.cur.execute("SELECT DISTINCT type, name FROM `software`;")
 software_types = db.cur.fetchall()
 print software_types
 
+#pagination
+if len(sys.argv) == 3:
+    start = sys.argv[1]
+    num_records = sys.argv[2]
+elif len(sys.argv) == 2:
+    start = sys.argv[1]
+    num_records = onfig.LARGE_NUM
+else:
+    start = 0
+    num_records = config.LARGE_NUM
+
 #load all migrations we will use to train from
-db.cur.execute("SELECT * FROM migration WHERE train = 1;")
+db.cur.execute("SELECT * FROM migration WHERE train = 1  LIMIT "+str(int(start))+", "+str(int(num_records))+";")
 migrations = db.cur.fetchall()
 
 
