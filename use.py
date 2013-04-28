@@ -75,8 +75,10 @@ def find_original_visit(visit_to):
                     #look up software total #(x1=b)
                     db.cur.execute("SELECT count FROM software_total WHERE type = %s AND name = %s AND version = %s;", (type, name, version2));
                     software_total = db.cur.fetchone()
-                    print software_total
-                    count_Pa = software_total[0]
+                    if software_total is None:
+                        count_Pa = 0
+                    else:
+                        count_Pa = software_total[0]
                     #print count_Pa
                     
                     #look up # of states for that software
