@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Apr 27, 2013 at 09:50 PM
+-- Generation Time: Apr 28, 2013 at 06:40 AM
 -- Server version: 5.5.29
 -- PHP Version: 5.3.10-1ubuntu3.6
 
@@ -54,11 +54,12 @@ CREATE TABLE IF NOT EXISTS `migration` (
   `cookie_id` char(32) NOT NULL,
   `visit_from` int(11) NOT NULL,
   `visit_to` int(11) NOT NULL,
-  `fonts_added` int(11) DEFAULT NULL,
-  `fonts_removed` int(11) DEFAULT NULL,
+  `fonts_added` int(11) NOT NULL,
+  `fonts_removed` int(11) NOT NULL,
   `train` tinyint(1) NOT NULL,
-  PRIMARY KEY (`migration_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=73 ;
+  PRIMARY KEY (`migration_id`),
+  UNIQUE KEY `visit_from` (`visit_from`,`visit_to`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=36 ;
 
 -- --------------------------------------------------------
 
@@ -116,6 +117,7 @@ CREATE TABLE IF NOT EXISTS `tested` (
   `result_visit_id` int(11) NOT NULL,
   `correct` tinyint(1) NOT NULL,
   `prob` float NOT NULL,
+  `time` float NOT NULL,
   UNIQUE KEY `migration_id` (`migration_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

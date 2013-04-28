@@ -63,6 +63,7 @@ for migration in migrations:
     [result_visit_id, prob] = use.find_original_visit(visit_to)
     
     end_time = time.time()
+    duration = end_time - start_time
     
     #check if result is correct
     print '-------'
@@ -71,7 +72,7 @@ for migration in migrations:
     print "we wanted visit#: "+str(visit_from_id)
     print "we got visit#: "+str(result_visit_id)
     print "with prob: "+str(prob)
-    print "Elapsed time was %g seconds" % (end_time - start_time)
+    print "Elapsed time was %g seconds" % (duration)
     #perhaps print the rows
     #print_visit(visit_to_id)
     #print_visit(visit_from_id)
@@ -87,10 +88,10 @@ for migration in migrations:
     tested += 1
     
     #insert
-    db.cur.execute("INSERT INTO tested (migration_id, result_visit_id, correct, prob) "+
-                                                     "VALUES (%s, %s, %s, %s) "+
-                                                     "ON DUPLICATE KEY UPDATE result_visit_id = %s, correct = %s, prob = %s;",
-                                                     (migration_id, result_visit_id, correct_bit, prob, result_visit_id, correct_bit, prob));
+    db.cur.execute("INSERT INTO tested (migration_id, result_visit_id, correct, prob, time) "+
+                                                     "VALUES (%s, %s, %s, %s, %s) "+
+                                                     "ON DUPLICATE KEY UPDATE result_visit_id = %s, correct = %s, prob = %s, time = %s;",
+                                                     (migration_id, result_visit_id, correct_bit, prob, duration, result_visit_id, correct_bit, prob, duration));
     
 global_end_time = time.time()
 print 'at the end:'
