@@ -1,4 +1,13 @@
-#test out rows
+"""
+This is the function that runs the test script.
+
+It loads rows to test on and then tries to find the most likely row
+
+Author: Michael Plasmeier http://theplaz.com
+Date: April 2013
+License: CC-BY-SA-NC 2.5
+"""
+
 
 import array
 import numpy as np

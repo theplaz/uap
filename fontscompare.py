@@ -1,3 +1,13 @@
+"""
+This is the library that compares the list of fonts between 2 visits.
+Returns the number of fonts added and the number of fonts removed.
+
+Author: Michael Plasmeier http://theplaz.com
+Date: April 2013
+License: CC-BY-SA-NC 2.5
+"""
+
+
 def fontscompare(a, b):
     
     if a is None:

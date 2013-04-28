@@ -1,3 +1,11 @@
+"""
+This is the function that does the actual Nieve Bayes Classification.
+
+Author: Michael Plasmeier http://theplaz.com
+Date: April 2013
+License: CC-BY-SA-NC 2.5
+"""
+
 import array
 import numpy as np
 import pprint
@@ -6,9 +14,7 @@ import fontscompare
 
 db.create_db_conn()
 
-#do the naive bayes classifier
-
- #load all software times software
+#load all software times software
 db.cur.execute("SELECT DISTINCT type, name FROM `software`;")
 software_types = db.cur.fetchall()
 
@@ -18,6 +24,10 @@ visits_from = db.cur.fetchall()
 
 #get input row
 def find_original_visit(visit_to):
+    '''Does the Nieve Bayes classification and returns the most likley row in the database
+       Input: a visit_to row as a number-indexed list.  Currently must be a row in the db
+       Outputs: best_visit_id = the row id, visit_from_P_value = the generated P value of that row
+    '''
     best_visit_id = None
     best_visit_value = float(0)
     
