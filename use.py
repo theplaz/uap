@@ -15,12 +15,28 @@ import fontscompare
 db.create_db_conn()
 
 #load all software times software
-db.cur.execute("SELECT DISTINCT type, name FROM `software`;")
+db.cur.execute("SELECT DISTINCT type, name FROM software;")
 software_types = db.cur.fetchall()
 
 #load all existing visits
 db.cur.execute("SELECT * FROM visit;")
 visits_from = db.cur.fetchall()
+
+#load visit_from software into a local datastore
+db.cur.execute("SELECT visit_id, type, name, version FROM software;")
+softwares1_versions = db.cur.fetchall()
+softwares1 = {}
+for software1 in softwares1_versions:
+    visit_id = software1[0]
+    print visit_id
+    type = software1[1]
+    name = software1[2]
+    version = software1[3]
+    index = type+"/"+name
+    if visit_id not in softwares1.keys():
+        softwares1[visit_id] = {}
+    softwares1[visit_id][index] = version
+
 
 #get input row
 def find_original_visit(visit_to):
@@ -28,6 +44,8 @@ def find_original_visit(visit_to):
        Input: a visit_to row as a number-indexed list.  Currently must be a row in the db.
        Outputs: best_visit_id = the row id, visit_from_P_value = the generated P value of that row
     '''
+    visit_to_id = visit_to[0]
+    
     best_visit_id = None
     best_visit_value = float(0)
     
@@ -45,24 +63,14 @@ def find_original_visit(visit_to):
     #for each row in the db
     for visit_from in visits_from:
         #print visit_from
+        visit_from_id = visit_from[0]
         
         #skip row if it is our original row
-        if visit_from[0] != visit_to[0]:
+        if visit_from_id != visit_to_id:
         
             visit_from_P_value = float(1)
             
             #can skip P(x0=A) since all have this
-            
-            #load visit_from software into a local datastore
-            db.cur.execute("SELECT type, name, version FROM software WHERE visit_id = %s;", (visit_from[0]))
-            softwares1_versions = db.cur.fetchall()
-            softwares1 = {}
-            for software1 in softwares1_versions:
-                type = software1[0]
-                name = software1[1]
-                version = software1[2]
-                index = type+"/"+name
-                softwares1[index] = version
             
             #for each software type
             for software in software_types:
@@ -71,8 +79,8 @@ def find_original_visit(visit_to):
                 index = type+"/"+name
                 
                 #look up version1 and version2 for this software
-                if index in softwares1.keys():
-                    version1 = softwares1[index]
+                if index in softwares1[visit_from_id].keys():
+                    version1 = softwares1[visit_from_id][index]
                 else:
                     version1 = 'none'
                 #print version1
