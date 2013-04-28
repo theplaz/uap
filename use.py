@@ -46,9 +46,6 @@ def find_original_visit(visit_to):
             for software in software_types:
                 type = software[0]
                 name = software[1]
-                print '---'
-                print type
-                print name
                 
                 #look up version1 and version2 for this software
                 db.cur.execute("SELECT version FROM software WHERE type = %s AND name = %s AND visit_id = %s LIMIT 1;", (type, name, visit_from[0]))
@@ -57,7 +54,7 @@ def find_original_visit(visit_to):
                     version1 = 'none'
                 else:
                     version1 = softwares1[0]
-                print version1
+                #print version1
                 
                 db.cur.execute("SELECT version FROM software WHERE type = %s AND name = %s AND visit_id = %s LIMIT 1;", (type, name, visit_to[0]))
                 softwares2 = db.cur.fetchone()
@@ -66,46 +63,33 @@ def find_original_visit(visit_to):
                     version2 = 'none'
                 else:
                     version2 = softwares2[0]
-                print version2
+                #print version2
                 
                 #select Markov(x0 = a AND x1 = b)
-                db.cur.execute("SELECT Pba, Pba_laplace FROM markov_estimates WHERE type = %s AND name = %s AND version1 = %s AND version2 = %s", (type, name, version1, version2));
-                estimate = db.cur.fetchone()
-                #print estimate
-                if estimate is None: #if we've never seen this transition before
-                    print '-'
-                    print 'did not find'
-                    print type
-                    print name
-                    print version1
-                    print version2
-                    #must look up manual
-                    
-                    #look up software total #(x1=b)
-                    db.cur.execute("SELECT count FROM software_total WHERE type = %s AND name = %s AND version = %s;", (type, name, version2));
-                    software_total = db.cur.fetchone()
-                    if software_total is None: #if we've never seen this state before...
-                        count_Pa = 0
-                        print '-'
-                        print 'didnot find'
-                        print type
-                        print name
-                        print version2
-                        exit()
-                    else:
-                        count_Pa = software_total[0]
-                    #print count_Pa
-                    
-                    #look up # of states for that software
-                    db.cur.execute("SELECT COUNT(*) FROM software_total WHERE type = %s AND name = %s", (type, name));
-                    states = db.cur.fetchone()
-                    count_states = states[0]
-                    #print count_states
-                    
-                    Pba_laplace = 1 / float((count_Pa + count_states))
-                    #print Pba_laplace
+                db.cur.execute("SELECT count FROM migration_total WHERE type = %s AND name = %s AND version1 = %s AND version2 = %s;", (type, name, version1, version2));
+                migration_total = db.cur.fetchone()
+                if migration_total is not None:
+                    count_PaANDb = migration_total[0]
                 else:
-                    Pba_laplace = estimate[1]
+                    count_PaANDb = 0
+                #print count_PaANDb
+                
+                #select Markov(x0 = a AND x1 = b)
+                db.cur.execute("SELECT count FROM software_total WHERE type = %s AND name = %s AND version = %s;", (type, name, version2));
+                software_total = db.cur.fetchone()
+                if software_total is not None:
+                    count_Pa = software_total[0]
+                else:
+                    count_Pa = 0
+                #print count_Pa
+                
+                #look up # of states for that software
+                db.cur.execute("SELECT COUNT(*) FROM software_total WHERE type = %s AND name = %s", (type, name));
+                states = db.cur.fetchone()
+                count_states = states[0]
+                #print count_states
+                
+                Pba_laplace = (count_PaANDb + 1) / float((count_Pa + count_states))
                 
                 visit_from_P_value *= Pba_laplace
             

@@ -62,9 +62,6 @@ for migration_pair in migration_pairs:
     count_states = states[0]
     #print count_states
     
-    Pba = float(1)
-    Pba_laplace = float(1)
-    
     Pba = count_PaANDb / float(count_Pa)
     #print Pba
     
