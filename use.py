@@ -53,6 +53,17 @@ def find_original_visit(visit_to):
             
             #can skip P(x0=A) since all have this
             
+            #load visit_from software into a local datastore
+            db.cur.execute("SELECT type, name, version FROM software WHERE visit_id = %s;", (visit_from[0]))
+            softwares1_versions = db.cur.fetchall()
+            softwares1 = {}
+            for software1 in softwares1_versions:
+                type = software1[0]
+                name = software1[1]
+                version = software1[2]
+                index = type+"/"+name
+                softwares1[index] = version
+            
             #for each software type
             for software in software_types:
                 type = software[0]
@@ -60,12 +71,10 @@ def find_original_visit(visit_to):
                 index = type+"/"+name
                 
                 #look up version1 and version2 for this software
-                db.cur.execute("SELECT version FROM software WHERE type = %s AND name = %s AND visit_id = %s LIMIT 1;", (type, name, visit_from[0]))
-                softwares1 = db.cur.fetchone()
-                if softwares1 is None:
-                    version1 = 'none'
+                if index in softwares1.keys():
+                    version1 = softwares1[index]
                 else:
-                    version1 = softwares1[0]
+                    version1 = 'none'
                 #print version1
                 
                 if index in softwares2.keys():
