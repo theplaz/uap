@@ -46,7 +46,7 @@ for i in range(rounds):
 db.conn.commit()
     
 ##### builder1.py ####
-db.cur.execute("SELECT COUNT(*) FROM software;")
+db.cur.execute("SELECT COUNT(DISTINCT cookie_id) FROM visit;")
 count = db.cur.fetchone()
 count = count[0]
 print count
@@ -60,9 +60,9 @@ for i in range(rounds):
     print "python builder1.py "+str(round)+" "+str(config.ROWS_PER_RUN)
     os.system("python builder1.py "+str(round)+" "+str(config.ROWS_PER_RUN))
 db.conn.commit()
-
+    
 ##### builder2.py ####
-db.cur.execute("SELECT COUNT(DISTINCT cookie_id) FROM visit;")
+db.cur.execute("SELECT COUNT(*) FROM migration WHERE train = 1;")
 count = db.cur.fetchone()
 count = count[0]
 print count
@@ -76,9 +76,9 @@ for i in range(rounds):
     print "python builder2.py "+str(round)+" "+str(config.ROWS_PER_RUN)
     os.system("python builder2.py "+str(round)+" "+str(config.ROWS_PER_RUN))
 db.conn.commit()
-    
+
 ##### builder3.py ####
-db.cur.execute("SELECT COUNT(*) FROM migration WHERE train = 1;")
+db.cur.execute("SELECT COUNT(*) FROM migration_total;")
 count = db.cur.fetchone()
 count = count[0]
 print count
@@ -91,22 +91,6 @@ for i in range(rounds):
     round = i * config.ROWS_PER_RUN
     print "python builder3.py "+str(round)+" "+str(config.ROWS_PER_RUN)
     os.system("python builder3.py "+str(round)+" "+str(config.ROWS_PER_RUN))
-db.conn.commit()
-
-##### builder4.py ####
-db.cur.execute("SELECT COUNT(*) FROM migration_total;")
-count = db.cur.fetchone()
-count = count[0]
-print count
-rounds = int(math.ceil(count/float(config.ROWS_PER_RUN)))
-print rounds
-
-print '##### builder4.py #####'
-print str(count)+' rows, so '+str(rounds)+' rounds'
-for i in range(rounds):
-    round = i * config.ROWS_PER_RUN
-    print "python builder4.py "+str(round)+" "+str(config.ROWS_PER_RUN)
-    os.system("python builder4.py "+str(round)+" "+str(config.ROWS_PER_RUN))
 db.conn.commit()
     
 db.conn.commit()

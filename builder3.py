@@ -1,13 +1,13 @@
 """
 This is the third step in the process to build the Markov model.
 
-In this file, we count the number of migrations of each software version.
-We do this by scanning the migrations we created in builder2.py.
-We also count the number of each number of fonts we've added.
+In this file, we generate the Markov probability rows, but populating the 'markov_estimate' table.
+We do that by scanning over all migration_totals.
+We generate simple probability as well as the probability with Laplace smoothing.
 
-Rerun Allowed: NO!
+Rerun Allowed: Yes
 
-Reset: TRUNCATE migration_total table
+Reset: TRUNCATE markov_estimate table
 
 Author: Michael Plasmeier http://theplaz.com
 Date: April 2013
@@ -21,11 +21,6 @@ import config
 
 db.create_db_conn()
 
-#select software
-db.cur.execute("SELECT DISTINCT type, name FROM `software`;")
-software_types = db.cur.fetchall()
-#print software_types
-
 #pagination
 if len(sys.argv) == 3:
     start = sys.argv[1]
@@ -37,75 +32,51 @@ else:
     start = 0
     num_records = config.LARGE_NUM
 
-#load all migrations we will use to train from
-db.cur.execute("SELECT * FROM migration WHERE train = 1  LIMIT "+str(int(start))+", "+str(int(num_records))+";")
-migrations = db.cur.fetchall()
+#select migration totals
+db.cur.execute("SELECT * FROM migration_total LIMIT "+str(int(start))+", "+str(int(num_records))+";")
+migration_pairs = db.cur.fetchall()
 
 i = 0
-row_total = len(migrations)
-for migration in migrations:
-    #print migration
-    migration_id = migration[0]
-    cookie_id = migration[1]
-    visit_from = migration[2]
-    visit_to = migration[3]
-    fonts_added = migration[4]
-    fonts_removed = migration[5]
+row_total = len(migration_pairs)
+print row_total
+for migration_pair in migration_pairs:
+    #print migration_pair
+    type = migration_pair[0]
+    name = migration_pair[1]
+    version1 = migration_pair[2]
+    version2 = migration_pair[3]
+    count_PaANDb = migration_pair[4]
+    #print count_PaANDb
     
-    #SELECT all the software about this migration
-    db.cur.execute("SELECT * FROM `software` WHERE visit_id = %s;", visit_from)
-    softwares1 = db.cur.fetchall()
+    #look up software total #(x1=b)
+    db.cur.execute("SELECT count FROM software_total WHERE type = %s AND name = %s AND version = %s;", (type, name, version2));
+    software_total = db.cur.fetchone()
+    count_Pa = software_total[0]
+    #print count_Pa
     
-    db.cur.execute("SELECT * FROM `software` WHERE visit_id = %s;", visit_to)
-    softwares2 = db.cur.fetchall()
+    #look up # of states for that software
+    db.cur.execute("SELECT COUNT(*) FROM software_total WHERE type = %s AND name = %s", (type, name));
+    states = db.cur.fetchone()
+    count_states = states[0]
+    #print count_states
     
-    #for each software we are looking at
-    for software in software_types:
-        #print software
-        software_type = software[0]
-        software_name = software[1]
-        
-        #locate it in the bundle
-        #find what version it is
-        software_version1 = 'None'
-        for software1 in softwares1:
-            if software1[2] == software_type and software1[3] == software_name:
-                #print 'found1'
-                software_version1 = software1[4]
-                break
-            
-        software_version2 = 'None'
-        for software2 in softwares2:
-            if software2[2] == software_type and software2[3] == software_name:
-                #print 'found2'
-                software_version2 = software2[4]
-                break
-        #print software_version1
-        #print software_version2
-        
-        #insert #(x0=a AND x1=b)
-        db.cur.execute("INSERT INTO migration_total (type, name, version1, version2, count) "+
-                       "VALUES (%s, %s, %s, %s, 1) "+
-                       "ON DUPLICATE KEY UPDATE count=count+1;",
-                       (software_type, software_name, software_version1, software_version2));
-
-        #insert #(x1=b)
-        db.cur.execute("INSERT INTO software_total (type, name, version, count) "+
-                       "VALUES (%s, %s, %s, 1) "+
-                       "ON DUPLICATE KEY UPDATE count=count+1;",
-                       (software_type, software_name, software_version2));
-
-    #deal with fonts
-    db.cur.execute("INSERT INTO font_total (type, number, count) "+
-                                                     "VALUES (%s, %s, 1) "+
-                                                     "ON DUPLICATE KEY UPDATE count=count+1;",
-                                                     ('added', fonts_added));
-                                                     
-    db.cur.execute("INSERT INTO font_total (type, number, count) "+
-                                                     "VALUES (%s, %s, 1) "+
-                                                     "ON DUPLICATE KEY UPDATE count=count+1;",
-                                                     ('removed', fonts_removed));
+    Pba = float(1)
+    Pba_laplace = float(1)
+    
+    Pba = count_PaANDb / float(count_Pa)
+    #print Pba
+    
+    Pba_laplace = (count_PaANDb + 1) / float((count_Pa + count_states))
+    #print Pba_laplace
+    
+    #insert
+    db.cur.execute("INSERT INTO markov_estimates (type, name, version1, version2, Pba, Pba_laplace) "+
+                                                     "VALUES (%s, %s, %s, %s, %s, %s) "+
+                                                     "ON DUPLICATE KEY UPDATE Pba = %s, Pba_laplace = %s;",
+                                                     (type, name, version1, version2, Pba, Pba_laplace, Pba, Pba_laplace));
     i += 1
+    print "inserted into markov estimates: "+type+" "+name+" "+version1+" "+version2+" Prob: "+str(Pba)+" LaPlace Prob:"+str(Pba_laplace)
     print "done builder3 "+str(i)+" of "+str(row_total)
+    
 db.conn.commit()
 db.close_db_conn()

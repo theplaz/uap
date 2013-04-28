@@ -41,4 +41,3 @@ See the description in each file for important info if you can rerun or if you n
 1. Run ```builder1.py```
 1. Run ```builder2.py```
 1. Run ```builder3.py```
-1. Run ```builder4.py```
