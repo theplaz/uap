@@ -16,7 +16,7 @@ We also calculate the number of fonts added and removed between rows here.
 
 We save the migrations in the new db 'migration' table.
 
-Rerun Allowed: I believe so (confirm, add ignore)
+Rerun Allowed: Yes
 
 Reset: TRUNCATE migration tables
 
@@ -50,28 +50,33 @@ db.cur.execute("SELECT DISTINCT cookie_id FROM visit LIMIT "+str(int(start))+", 
 users = db.cur.fetchall()
 
 for user in users:
-    print user
-    print user[0].strip()
+    cookie_id = user[0].strip()
     
-    if user[0].strip() != "no cookie":
-    
-        db.cur.execute("SELECT * FROM visit WHERE cookie_id = %s ORDER BY timestamp ASC;", user[0].strip())
+    if cookie_id == "no cookie":
+        print "no cookie, so skip"
+        pass
+    else:
+        db.cur.execute("SELECT id, fonts, timestamp FROM visit WHERE cookie_id = %s ORDER BY timestamp ASC;", user[0].strip())
         fingerprints = db.cur.fetchall()
         print len(fingerprints)
         
         #save pairs where time > 1 hr
-        if len(fingerprints) > 1: #if == 1 then just skip (visitor only came once)
+        if len(fingerprints) == 1: #if == 1 then just skip (visitor only came once)
+            print "only one fingerprint, skip"
+            pass
+        else:
             i = 0
             for fingerprint1 in fingerprints:
                 if i <= len(fingerprints) - 2:
                     fingerprint2 = fingerprints[i+1]
                     print 'compare '+str(fingerprint1[0])+' '+str(fingerprint2[0])
-                    print fingerprint1[18]
-                    print fingerprint2[18]
-                    if (fingerprint2[18] - fingerprint1[18]) > (60*60):
+                    if (fingerprint2[2] - fingerprint1[2]) < (60*60): #if less than 1 hour
+                        print 'less than an hour, so skip'
+                        pass
+                    else:
                         
                         #calculate fonts
-                        [fonts_added, fonts_removed] = fontscompare.fontscompare(fingerprint1[7], fingerprint2[7])
+                        [fonts_added, fonts_removed] = fontscompare.fontscompare(fingerprint1[1], fingerprint2[1])
                         
                         #train or test set?
                         rand = random.randint(1,4)
@@ -81,15 +86,11 @@ for user in users:
                             train = 0
                         
                         #insert migration into table
-                        db.cur.execute("INSERT INTO migration (cookie_id, visit_from, visit_to, fonts_added, fonts_removed, train) "+
-                                                     "VALUES (%s, %s, %s, %s, %s, %s)", 
-                           (user[0].strip(), fingerprint1[0], fingerprint2[0], fonts_added, fonts_removed, train));
-                        print 'added migration for user: '+str(user[0])
-                    else:
-                        print 'less than an hour'
+                        db.cur.execute("INSERT IGNORE INTO migration (cookie_id, visit_from, visit_to, fonts_added, fonts_removed, train) "+
+                                                     "VALUES (%s, %s, %s, %s, %s, %s)",
+                           (cookie_id, fingerprint1[0], fingerprint2[0], fonts_added, fonts_removed, train));
+                        print 'added migration for user: '+str(cookie_id)
                 i+=1
-    else:
-        print "no cookie so skip"
     
 db.conn.commit()
 db.close_db_conn()
