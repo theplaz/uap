@@ -3,7 +3,7 @@ This is the third step in the process to build the Markov model.
 
 In this file, we count the number of migrations of each software version.
 We do this by scanning the migrations we created in builder2.py.
-We also count the number of each install of the software we have.
+We also count the number of each number of fonts we've added.
 
 Rerun Allowed: NO!
 
@@ -14,12 +14,12 @@ Date: April 2013
 License: CC-BY-SA-NC 2.5
 """
 
+import sys
 import db
 import re
 import config
 
 db.create_db_conn()
-db.create_orig_db_conn()
 
 #select software
 db.cur.execute("SELECT DISTINCT type, name FROM `software`;")
@@ -103,4 +103,3 @@ for migration in migrations:
                                                      ('removed', fonts_removed));
 db.conn.commit()
 db.close_db_conn()
-db.close_orig_db_conn()

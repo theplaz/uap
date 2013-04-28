@@ -14,12 +14,12 @@ Date: April 2013
 License: CC-BY-SA-NC 2.5
 """
 
+import sys
 import db
 import re
 import config
 
 db.create_db_conn()
-db.create_orig_db_conn()
 
 #pagination
 if len(sys.argv) == 3:
@@ -76,4 +76,3 @@ for migration_pair in migration_pairs:
     
 db.conn.commit()
 db.close_db_conn()
-db.close_orig_db_conn()

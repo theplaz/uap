@@ -14,6 +14,7 @@ Date: April 2013
 License: CC-BY-SA-NC 2.5
 """
 
+import sys
 import db
 import re
 import config
@@ -32,8 +33,8 @@ else:
     num_records = config.LARGE_NUM
 
 #load all software versions
-db.orig_cur.execute("SELECT type, browser, version FROM software LIMIT "+str(int(start))+", "+str(int(num_records))+";")
-software_instances = db.orig_cur.fetchall()
+db.cur.execute("SELECT type, name, version FROM software LIMIT "+str(int(start))+", "+str(int(num_records))+";")
+software_instances = db.cur.fetchall()
 
 for software_instance in software_instances:
     print software_instance

@@ -25,6 +25,7 @@ Date: April 2013
 License: CC-BY-SA-NC 2.5
 """
 
+import sys
 import db
 import re
 import config
