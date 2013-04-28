@@ -15,12 +15,23 @@ import fontscompare
 db.create_db_conn()
 
 #load all software times software
-db.cur.execute("SELECT DISTINCT type, name FROM `software`;")
+db.cur.execute("SELECT DISTINCT type, name FROM software;")
 software_types = db.cur.fetchall()
 
 #load all existing visits
 db.cur.execute("SELECT * FROM visit;")
 visits_from = db.cur.fetchall()
+
+#load into memory
+softwares1 = {}
+for visit_from in visits_from:
+    #load visit_from software into a local datastore
+    db.cur.execute("SELECT visit_id, type, name, version FROM software;")
+    softwares1_versions = db.cur.fetchall()
+    for software1 in softwares1_versions:
+        if software1[0] not in softwares1.keys():
+            softwares1[software1[0]] = {}
+        softwares1[software1[0]][software1[1]+"/"+software1[2]] = software1[3]
 
 #get input row
 def find_original_visit(visit_to):
@@ -53,26 +64,12 @@ def find_original_visit(visit_to):
             
             #can skip P(x0=A) since all have this
             
-            #load visit_from software into a local datastore
-            db.cur.execute("SELECT type, name, version FROM software WHERE visit_id = %s;", (visit_from[0]))
-            softwares1_versions = db.cur.fetchall()
-            softwares1 = {}
-            for software1 in softwares1_versions:
-                type = software1[0]
-                name = software1[1]
-                version = software1[2]
-                index = type+"/"+name
-                softwares1[index] = version
-            
             #for each software type
             for software in software_types:
-                type = software[0]
-                name = software[1]
-                index = type+"/"+name
                 
                 #look up version1 and version2 for this software
-                if index in softwares1.keys():
-                    version1 = softwares1[index]
+                if index in softwares1[visit_from[0]].keys():
+                    version1 = softwares1[visit_from[0]][software[0]+"/"+software[1]]
                 else:
                     version1 = 'none'
                 #print version1
