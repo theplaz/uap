@@ -51,6 +51,7 @@ users = db.cur.fetchall()
 
 for user in users:
     cookie_id = user[0].strip()
+    print 'looking at '+str(cookie_id)
     
     if cookie_id == "no cookie":
         print "no cookie, so skip"

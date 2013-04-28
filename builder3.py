@@ -24,7 +24,7 @@ db.create_db_conn()
 #select software
 db.cur.execute("SELECT DISTINCT type, name FROM `software`;")
 software_types = db.cur.fetchall()
-print software_types
+#print software_types
 
 #pagination
 if len(sys.argv) == 3:
@@ -43,7 +43,7 @@ migrations = db.cur.fetchall()
 
 
 for migration in migrations:
-    print migration
+    #print migration
     migration_id = migration[0]
     cookie_id = migration[1]
     visit_from = migration[2]
@@ -54,11 +54,9 @@ for migration in migrations:
     #SELECT all the software about this migration
     db.cur.execute("SELECT * FROM `software` WHERE visit_id = %s;", visit_from)
     softwares1 = db.cur.fetchall()
-    print softwares1
-    print '---'
+    
     db.cur.execute("SELECT * FROM `software` WHERE visit_id = %s;", visit_to)
     softwares2 = db.cur.fetchall()
-    print softwares2
     
     #for each software we are looking at
     for software in software_types:
@@ -71,15 +69,14 @@ for migration in migrations:
         software_version1 = 'None'
         for software1 in softwares1:
             if software1[2] == software_type and software1[3] == software_name:
-                print 'found1'
-                print software1
+                #print 'found1'
                 software_version1 = software1[4]
                 break
             
         software_version2 = 'None'
         for software2 in softwares2:
             if software2[2] == software_type and software2[3] == software_name:
-                print 'found2'
+                #print 'found2'
                 software_version2 = software2[4]
                 break
         #print software_version1
