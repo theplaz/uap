@@ -1,13 +1,24 @@
 """
 This is the second step in the process to build the Markov model.
 
-In this file, we count the number of migrations of each software version.
-We do this by scanning the migrations we created in builder1.py.
-We also count the number of each install of the software we have.
+In this file, we create migration records.  A migration is an ordered pair of two visits a -> b made by the same user.
+A unique user has the same cookie_id which is present among multiple visits (aka fingerprints).
 
-Rerun Allowed: NO!
+We make make a migration for each ordered pair of visits by a user.
 
-Reset: TRUNCATE migration_total table
+For example, if a visitor visits the site 3 times, which we call a, b,  and c, the following migrations are created:
+a -> b
+b -> c
+
+We only make a migration if the visits were > 1 hour apart.
+
+We also calculate the number of fonts added and removed between rows here.
+
+We save the migrations in the new db 'migration' table.
+
+Rerun Allowed: I believe so (confirm, add ignore)
+
+Reset: TRUNCATE migration tables
 
 Author: Michael Plasmeier http://theplaz.com
 Date: April 2013
@@ -17,14 +28,10 @@ License: CC-BY-SA-NC 2.5
 import db
 import re
 import config
+import random
+import fontscompare
 
 db.create_db_conn()
-db.create_orig_db_conn()
-
-#select software
-db.cur.execute("SELECT DISTINCT type, name FROM `software`;")
-software_types = db.cur.fetchall()
-print software_types
 
 #pagination
 if len(sys.argv) == 3:
@@ -37,76 +44,51 @@ else:
     start = 0
     num_records = config.LARGE_NUM
 
-#load all migrations we will use to train from
-db.cur.execute("SELECT * FROM migration WHERE train = 1  LIMIT "+str(int(start))+", "+str(int(num_records))+";")
-migrations = db.cur.fetchall()
+#load all unique users (cookies)
+db.cur.execute("SELECT DISTINCT cookie_id FROM visit LIMIT "+str(int(start))+", "+str(int(num_records))+";")
+users = db.cur.fetchall()
 
-
-for migration in migrations:
-    print migration
-    migration_id = migration[0]
-    cookie_id = migration[1]
-    visit_from = migration[2]
-    visit_to = migration[3]
-    fonts_added = migration[4]
-    fonts_removed = migration[5]
+for user in users:
+    print user
+    print user[0].strip()
     
-    #SELECT all the software about this migration
-    db.cur.execute("SELECT * FROM `software` WHERE visit_id = %s;", visit_from)
-    softwares1 = db.cur.fetchall()
-    print softwares1
-    print '---'
-    db.cur.execute("SELECT * FROM `software` WHERE visit_id = %s;", visit_to)
-    softwares2 = db.cur.fetchall()
-    print softwares2
+    if user[0].strip() != "no cookie":
     
-    #for each software we are looking at
-    for software in software_types:
-        #print software
-        software_type = software[0]
-        software_name = software[1]
+        db.cur.execute("SELECT * FROM visit WHERE cookie_id = %s ORDER BY timestamp ASC;", user[0].strip())
+        fingerprints = db.cur.fetchall()
+        print len(fingerprints)
         
-        #locate it in the bundle
-        #find what version it is
-        software_version1 = 'None'
-        for software1 in softwares1:
-            if software1[2] == software_type and software1[3] == software_name:
-                print 'found1'
-                print software1
-                software_version1 = software1[4]
-                break
-            
-        software_version2 = 'None'
-        for software2 in softwares2:
-            if software2[2] == software_type and software2[3] == software_name:
-                print 'found2'
-                software_version2 = software2[4]
-                break
-        #print software_version1
-        #print software_version2
-        
-        #insert #(x0=a AND x1=b)
-        db.cur.execute("INSERT INTO migration_total (type, name, version1, version2, count) "+
-                                                     "VALUES (%s, %s, %s, %s, 1) "+
-                                                     "ON DUPLICATE KEY UPDATE count=count+1;",
-                                                     (software_type, software_name, software_version1, software_version2));
+        #save pairs where time > 1 hr
+        if len(fingerprints) > 1: #if == 1 then just skip (visitor only came once)
+            i = 0
+            for fingerprint1 in fingerprints:
+                if i <= len(fingerprints) - 2:
+                    fingerprint2 = fingerprints[i+1]
+                    print 'compare '+str(fingerprint1[0])+' '+str(fingerprint2[0])
+                    print fingerprint1[18]
+                    print fingerprint2[18]
+                    if (fingerprint2[18] - fingerprint1[18]) > (60*60):
+                        
+                        #calculate fonts
+                        [fonts_added, fonts_removed] = fontscompare.fontscompare(fingerprint1[7], fingerprint2[7])
+                        
+                        #train or test set?
+                        rand = random.randint(1,4)
+                        if rand <= 3:
+                            train = 1
+                        else:
+                            train = 0
+                        
+                        #insert migration into table
+                        db.cur.execute("INSERT INTO migration (cookie_id, visit_from, visit_to, fonts_added, fonts_removed, train) "+
+                                                     "VALUES (%s, %s, %s, %s, %s, %s)", 
+                           (user[0].strip(), fingerprint1[0], fingerprint2[0], fonts_added, fonts_removed, train));
+                        print 'added migration for user: '+str(user[0])
+                    else:
+                        print 'less than an hour'
+                i+=1
+    else:
+        print "no cookie so skip"
     
-        #insert #(x1=b)
-        db.cur.execute("INSERT INTO software_total (type, name, version, count) "+
-                                                     "VALUES (%s, %s, %s, 1) "+
-                                                     "ON DUPLICATE KEY UPDATE count=count+1;",
-                                                     (software_type, software_name, software_version2));
-                                                     
-    #deal with fonts
-    db.cur.execute("INSERT INTO font_total (type, number, count) "+
-                                                     "VALUES (%s, %s, 1) "+
-                                                     "ON DUPLICATE KEY UPDATE count=count+1;",
-                                                     ('added', fonts_added));
-                                                     
-    db.cur.execute("INSERT INTO font_total (type, number, count) "+
-                                                     "VALUES (%s, %s, 1) "+
-                                                     "ON DUPLICATE KEY UPDATE count=count+1;",
-                                                     ('removed', fonts_removed));
 db.conn.commit()
 db.close_db_conn()
-db.close_orig_db_conn()
