@@ -1,11 +1,25 @@
+"""
+This is the second step in the process to build the Markov model.
+
+In this file, we count the number of migrations of each software version.
+We do this by scanning the migrations we created in builder1.py.
+We also count the number of each install of the software we have.
+
+Rerun Allowed: NO!
+
+Reset: TRUNCATE migration_total table
+
+Author: Michael Plasmeier http://theplaz.com
+Date: April 2013
+License: CC-BY-SA-NC 2.5
+"""
+
 import db
 import re
 import config
 
 db.create_db_conn()
 db.create_orig_db_conn()
-
-#count migrations
 
 #select software
 db.cur.execute("SELECT DISTINCT type, name FROM `software`;")
@@ -18,7 +32,7 @@ if len(sys.argv) == 3:
     num_records = sys.argv[2]
 elif len(sys.argv) == 2:
     start = sys.argv[1]
-    num_records = onfig.LARGE_NUM
+    num_records = config.LARGE_NUM
 else:
     start = 0
     num_records = config.LARGE_NUM

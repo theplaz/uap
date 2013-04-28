@@ -27,7 +27,7 @@ if len(sys.argv) == 3:
     num_records = sys.argv[2]
 elif len(sys.argv) == 2:
     start = sys.argv[1]
-    num_records = onfig.LARGE_NUM
+    num_records = config.LARGE_NUM
 else:
     start = 0
     num_records = config.LARGE_NUM

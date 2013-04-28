@@ -34,7 +34,7 @@ See the description in each file for important info if you can rerun or if you n
 1. Set up a new MySQL database for the new migration-tuned database and run schema.sql to set up the schema  
 1. Set the database constants in ```config.py``` for both the old and new database
 
-## Migrator DB
+## Migrate DB
 1. Run ```migrator.py``` to copy ```fingerprint``` and ```visit``` tables to the new db ```visit``` and ```software``` tables.
 
 ## Build Markov Model

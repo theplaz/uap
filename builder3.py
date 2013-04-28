@@ -1,10 +1,25 @@
+"""
+This is the third step in the process to build the Markov model.
+
+In this file, we generate the Markov probability rows, but populating the 'markov_estimate' table.
+We do that by scanning over all migration_totals.
+We generate simple probability as well as the probability with Laplace smoothing.
+
+Rerun Allowed: Yes
+
+Reset: TRUNCATE markov_estimate table
+
+Author: Michael Plasmeier http://theplaz.com
+Date: April 2013
+License: CC-BY-SA-NC 2.5
+"""
+
 import db
 import re
+import config
 
 db.create_db_conn()
 db.create_orig_db_conn()
-
-#make markov prob
 
 #pagination
 if len(sys.argv) == 3:
@@ -12,7 +27,7 @@ if len(sys.argv) == 3:
     num_records = sys.argv[2]
 elif len(sys.argv) == 2:
     start = sys.argv[1]
-    num_records = onfig.LARGE_NUM
+    num_records = config.LARGE_NUM
 else:
     start = 0
     num_records = config.LARGE_NUM

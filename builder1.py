@@ -1,8 +1,8 @@
 """
 This is the first step in the process to build the Markov model.
 
-In this file, we create migrations.  A migration is an ordered pair of two visits a -> b made by the same user.
-A unique user has the same cookie_id which is present among multiple visits (fingerprints).
+In this file, we create migration records.  A migration is an ordered pair of two visits a -> b made by the same user.
+A unique user has the same cookie_id which is present among multiple visits (aka fingerprints).
 
 We make make a migration for each ordered pair of visits by a user.
 
@@ -40,7 +40,7 @@ if len(sys.argv) == 3:
     num_records = sys.argv[2]
 elif len(sys.argv) == 2:
     start = sys.argv[1]
-    num_records = onfig.LARGE_NUM
+    num_records = config.LARGE_NUM
 else:
     start = 0
     num_records = config.LARGE_NUM
