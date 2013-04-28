@@ -1,5 +1,6 @@
 import db
 import re
+import config
 
 db.create_db_conn()
 db.create_orig_db_conn()
