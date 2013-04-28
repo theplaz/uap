@@ -49,6 +49,8 @@ else:
 db.cur.execute("SELECT DISTINCT cookie_id FROM visit LIMIT "+str(int(start))+", "+str(int(num_records))+";")
 users = db.cur.fetchall()
 
+i = 0
+row_total = len(users)
 for user in users:
     cookie_id = user[0].strip()
     print 'looking at '+str(cookie_id)
@@ -66,10 +68,10 @@ for user in users:
             print "only one fingerprint, skip"
             pass
         else:
-            i = 0
+            j = 0
             for fingerprint1 in fingerprints:
-                if i <= len(fingerprints) - 2:
-                    fingerprint2 = fingerprints[i+1]
+                if j <= len(fingerprints) - 2:
+                    fingerprint2 = fingerprints[j+1]
                     print 'compare '+str(fingerprint1[0])+' '+str(fingerprint2[0])
                     if (fingerprint2[2] - fingerprint1[2]) < (60*60): #if less than 1 hour
                         print 'less than an hour, so skip'
@@ -91,7 +93,9 @@ for user in users:
                                                      "VALUES (%s, %s, %s, %s, %s, %s)",
                            (cookie_id, fingerprint1[0], fingerprint2[0], fonts_added, fonts_removed, train));
                         print 'added migration for user: '+str(cookie_id)
-                i+=1
+                j+=1
+    i += 1
+    print "done builder3 "+str(i)+" of "+str(row_total)
     
 db.conn.commit()
 db.close_db_conn()

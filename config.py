@@ -21,4 +21,5 @@ DB_PASS = 'panopticlick'
 DB_NAME = 'panopticlick'
 
 ##### Other #####
+ROWS_PER_RUN = 1000
 LARGE_NUM = 18446744073709551615 #Must be larger than # of rows in any table

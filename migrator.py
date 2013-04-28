@@ -36,6 +36,8 @@ else:
 db.orig_cur.execute("SELECT id, cookie_id, signature, ip, ip34, timestamp FROM cookies LIMIT "+str(int(start))+", "+str(int(num_records))+";")
 visits = db.orig_cur.fetchall()
 
+i = 0
+row_total = len(visits)
 for visit in visits:
     if visit != None:
         print visit[2].strip()
@@ -141,6 +143,9 @@ for visit in visits:
             else:
                 print 'error'
                 print parts
+    
+    i += 1
+    print "done migrator "+str(i)+" of "+str(row_total)
     
 db.conn.commit()
 db.close_db_conn()

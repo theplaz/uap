@@ -36,6 +36,8 @@ else:
 db.cur.execute("SELECT type, name, version FROM software LIMIT "+str(int(start))+", "+str(int(num_records))+";")
 software_instances = db.cur.fetchall()
 
+i = 0
+row_total = len(software_instances)
 for software_instance in software_instances:
     print software_instance
     software_instance_type = software_instance[0]
@@ -47,6 +49,9 @@ for software_instance in software_instances:
                    "VALUES (%s, %s, %s, 1) "+
                    "ON DUPLICATE KEY UPDATE count=count+1;",
                    (software_instance_type, software_instance_name, software_instance_version));
+    
+    i += 1
+    print "done builder1 "+str(i)+" of "+str(row_total)
     
 db.conn.commit()
 db.close_db_conn()

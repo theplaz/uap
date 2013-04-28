@@ -35,9 +35,12 @@ else:
 #select migration totals
 db.cur.execute("SELECT * FROM migration_total LIMIT "+str(int(start))+", "+str(int(num_records))+";")
 migration_pairs = db.cur.fetchall()
-print migration_pairs
 
+i = 0
+row_total = len(migration_pairs)
+print row_total
 for migration_pair in migration_pairs:
+    print migration_pair
     type = migration_pair[0]
     name = migration_pair[1]
     version1 = migration_pair[2]
@@ -46,8 +49,12 @@ for migration_pair in migration_pairs:
     #print count_PaANDb
     
     #look up software total #(x1=b)
+    print type
+    print name
+    print version2
     db.cur.execute("SELECT count FROM software_total WHERE type = %s AND name = %s AND version = %s;", (type, name, version2));
     software_total = db.cur.fetchone()
+    print software_total
     count_Pa = software_total[0]
     #print count_Pa
     
@@ -71,7 +78,9 @@ for migration_pair in migration_pairs:
                                                      "VALUES (%s, %s, %s, %s, %s, %s) "+
                                                      "ON DUPLICATE KEY UPDATE Pba = %s, Pba_laplace = %s;",
                                                      (type, name, version1, version2, Pba, Pba_laplace, Pba, Pba_laplace));
+    i += 1
     print "inserted into markov estimates: "+type+" "+name+" "+version1+" "+version2+" Prob: "+str(Pba)+" LaPlace Prob:"+str(Pba_laplace)
+    print "done builder4 "+str(i)+" of "+str(row_total)
     
 db.conn.commit()
 db.close_db_conn()
