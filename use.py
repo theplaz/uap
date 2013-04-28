@@ -25,11 +25,22 @@ visits_from = db.cur.fetchall()
 #get input row
 def find_original_visit(visit_to):
     '''Does the Naive Bayes classification and returns the most likely row in the database
-       Input: a visit_to row as a number-indexed list.  Currently must be a row in the db
+       Input: a visit_to row as a number-indexed list.  Currently must be a row in the db.
        Outputs: best_visit_id = the row id, visit_from_P_value = the generated P value of that row
     '''
     best_visit_id = None
     best_visit_value = float(0)
+    
+    #load visit_to software into a local datastore
+    db.cur.execute("SELECT type, name, version FROM software WHERE visit_id = %s;", (visit_to[0]))
+    softwares2_versions = db.cur.fetchall()
+    softwares2 = {}
+    for software2 in softwares2_versions:
+        type = software2[0]
+        name = software2[1]
+        version = software2[2]
+        index = type+"/"+name
+        softwares2[index] = version
     
     #for each row in the db
     for visit_from in visits_from:
@@ -42,10 +53,11 @@ def find_original_visit(visit_to):
             
             #can skip P(x0=A) since all have this
             
-            #for each software version
+            #for each software type
             for software in software_types:
                 type = software[0]
                 name = software[1]
+                index = type+"/"+name
                 
                 #look up version1 and version2 for this software
                 db.cur.execute("SELECT version FROM software WHERE type = %s AND name = %s AND visit_id = %s LIMIT 1;", (type, name, visit_from[0]))
@@ -56,13 +68,10 @@ def find_original_visit(visit_to):
                     version1 = softwares1[0]
                 #print version1
                 
-                db.cur.execute("SELECT version FROM software WHERE type = %s AND name = %s AND visit_id = %s LIMIT 1;", (type, name, visit_to[0]))
-                softwares2 = db.cur.fetchone()
-                #print softwares2
-                if softwares2 is None:
-                    version2 = 'none'
+                if index in softwares2.keys():
+                    version2 = softwares2[index]
                 else:
-                    version2 = softwares2[0]
+                    version2 = 'none'
                 #print version2
                 
                 #select Markov(x0 = a AND x1 = b)
