@@ -24,7 +24,7 @@ visits_from = db.cur.fetchall()
 
 #get input row
 def find_original_visit(visit_to):
-    '''Does the Nieve Bayes classification and returns the most likley row in the database
+    '''Does the Naive Bayes classification and returns the most likely row in the database
        Input: a visit_to row as a number-indexed list.  Currently must be a row in the db
        Outputs: best_visit_id = the row id, visit_from_P_value = the generated P value of that row
     '''
@@ -35,9 +35,8 @@ def find_original_visit(visit_to):
     for visit_from in visits_from:
         #print visit_from
         
-        #skip current row
+        #skip row if it is our original row
         if visit_from[0] != visit_to[0]:
-            
         
             visit_from_P_value = float(1)
             
@@ -47,15 +46,18 @@ def find_original_visit(visit_to):
             for software in software_types:
                 type = software[0]
                 name = software[1]
+                print '---'
+                print type
+                print name
                 
                 #look up version1 and version2 for this software
                 db.cur.execute("SELECT version FROM software WHERE type = %s AND name = %s AND visit_id = %s LIMIT 1;", (type, name, visit_from[0]))
                 softwares1 = db.cur.fetchone()
-                #print softwares1
                 if softwares1 is None:
                     version1 = 'none'
                 else:
                     version1 = softwares1[0]
+                print version1
                 
                 db.cur.execute("SELECT version FROM software WHERE type = %s AND name = %s AND visit_id = %s LIMIT 1;", (type, name, visit_to[0]))
                 softwares2 = db.cur.fetchone()
@@ -64,19 +66,32 @@ def find_original_visit(visit_to):
                     version2 = 'none'
                 else:
                     version2 = softwares2[0]
+                print version2
                 
                 #select Markov(x0 = a AND x1 = b)
                 db.cur.execute("SELECT Pba, Pba_laplace FROM markov_estimates WHERE type = %s AND name = %s AND version1 = %s AND version2 = %s", (type, name, version1, version2));
                 estimate = db.cur.fetchone()
                 #print estimate
-                if estimate is None:
+                if estimate is None: #if we've never seen this transition before
+                    print '-'
+                    print 'did not find'
+                    print type
+                    print name
+                    print version1
+                    print version2
                     #must look up manual
                     
                     #look up software total #(x1=b)
                     db.cur.execute("SELECT count FROM software_total WHERE type = %s AND name = %s AND version = %s;", (type, name, version2));
                     software_total = db.cur.fetchone()
-                    if software_total is None:
+                    if software_total is None: #if we've never seen this state before...
                         count_Pa = 0
+                        print '-'
+                        print 'didnot find'
+                        print type
+                        print name
+                        print version2
+                        exit()
                     else:
                         count_Pa = software_total[0]
                     #print count_Pa

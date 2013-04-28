@@ -5,6 +5,8 @@ In this file, we generate the Markov probability rows, but populating the 'marko
 We do that by scanning over all migration_totals.
 We generate simple probability as well as the probability with Laplace smoothing.
 
+We precompute this to speed up the actual Bayes estimate.
+
 Rerun Allowed: Yes
 
 Reset: TRUNCATE markov_estimate table
