@@ -44,11 +44,7 @@ for software_instance in software_instances:
     software_instance_name = software_instance[1]
     software_instance_version = software_instance[2]
     
-    #insert #(x1=b)
-    db.cur.execute("INSERT INTO software_total (type, name, version, count) "+
-                   "VALUES (%s, %s, %s, 1) "+
-                   "ON DUPLICATE KEY UPDATE count=count+1;",
-                   (software_instance_type, software_instance_name, software_instance_version));
+    
     
     i += 1
     print "done builder1 "+str(i)+" of "+str(row_total)

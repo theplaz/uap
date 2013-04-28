@@ -85,10 +85,16 @@ for migration in migrations:
         
         #insert #(x0=a AND x1=b)
         db.cur.execute("INSERT INTO migration_total (type, name, version1, version2, count) "+
-                                                     "VALUES (%s, %s, %s, %s, 1) "+
-                                                     "ON DUPLICATE KEY UPDATE count=count+1;",
-                                                     (software_type, software_name, software_version1, software_version2));
-                                                     
+                       "VALUES (%s, %s, %s, %s, 1) "+
+                       "ON DUPLICATE KEY UPDATE count=count+1;",
+                       (software_type, software_name, software_version1, software_version2));
+
+        #insert #(x1=b)
+        db.cur.execute("INSERT INTO software_total (type, name, version, count) "+
+                       "VALUES (%s, %s, %s, 1) "+
+                       "ON DUPLICATE KEY UPDATE count=count+1;",
+                       (software_type, software_name, software_version2));
+
     #deal with fonts
     db.cur.execute("INSERT INTO font_total (type, number, count) "+
                                                      "VALUES (%s, %s, 1) "+
