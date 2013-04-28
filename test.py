@@ -14,6 +14,7 @@ import numpy as np
 import pprint
 import db
 import use
+import time
 
 db.create_db_conn()
 
@@ -42,7 +43,11 @@ for migration in migrations:
     visit_to = visit_to[0]
     print visit_to
     
+    start_time = time.time()
+    
     [result_visit_id, prob] = use.find_original_visit(visit_to)
+    
+    end_time = time.time()
     
     #check if result is correct
     print '-------'
@@ -51,6 +56,7 @@ for migration in migrations:
     print "we wanted visit#: "+str(visit_from_id)
     print "we got visit#: "+str(result_visit_id)
     print "with prob: "+str(prob)
+    print "Elapsed time was %g seconds" % (end_time - start_time)
     #perhaps print the rows
     #print_visit(visit_to_id)
     #print_visit(visit_from_id)

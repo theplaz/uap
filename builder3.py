@@ -5,7 +5,7 @@ In this file, we generate the Markov probability rows, but populating the 'marko
 We do that by scanning over all migration_totals.
 We generate simple probability as well as the probability with Laplace smoothing.
 
-We precompute this to speed up the actual Bayes estimate.
+We precompute this to speed up the actual Bayes estimate.  (In my test 10 sec, not 12 sec)
 
 Rerun Allowed: Yes
 
@@ -61,9 +61,6 @@ for migration_pair in migration_pairs:
     states = db.cur.fetchone()
     count_states = states[0]
     #print count_states
-    
-    Pba = float(1)
-    Pba_laplace = float(1)
     
     Pba = count_PaANDb / float(count_Pa)
     #print Pba
