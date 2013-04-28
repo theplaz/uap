@@ -1,5 +1,5 @@
 """
-This is the second step in the process to import the EFF database into my database.
+This is the first step in the process to build the Markov model.
 
 In this file, we create migrations.  A migration is an ordered pair of two visits a -> b made by the same user.
 A unique user has the same cookie_id which is present among multiple visits (fingerprints).
