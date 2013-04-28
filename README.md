@@ -19,7 +19,7 @@ converting it to my needs, and then running test cases over it.
 # Usage
 (again assuming have EFF database)
 
-Note for all migrators and builders, you can paginate results with ```migrator.py <start> <#records>```
+Note for all migrators, builders, and the tester, you can paginate results with ```migrator.py <start> <#records>```
 For example, ```migrator.py 10 5``` processes rows 11, 12, 13, 14, and 15.
 Both params are optional.  You can use:  
 ```migrator.py``` - to process all records  
@@ -35,12 +35,7 @@ See the description in each file for important info if you can rerun or if you n
 1. Set the database constants in ```config.py``` for both the old and new database
 
 ## Migrate DB
-1. Run ```migrator.py``` to copy ```fingerprint``` and ```visit``` tables to the new db ```visit``` and ```software``` tables.
-
-## Build Markov Model
-1. Run ```builder1.py```
-1. Run ```builder2.py```
-1. Run ```builder3.py```
+1. Run ```build.py``` which runs ```migrator.py```, ```builder1.py```, ```builder2.py```, and ```builder3.py``` with auto pagination
 
 ## To Test Model
 1. Run ```test.py``` to run test rows through the system

@@ -14,9 +14,24 @@ import numpy as np
 import pprint
 import db
 import use
+import sys
+import config
 import time
 
 db.create_db_conn()
+
+global_start_time = time.time()
+
+#pagination
+if len(sys.argv) == 3:
+    start = sys.argv[1]
+    num_records = sys.argv[2]
+elif len(sys.argv) == 2:
+    start = sys.argv[1]
+    num_records = config.LARGE_NUM
+else:
+    start = 0
+    num_records = config.LARGE_NUM
 
 #set variables
 correct = 0
@@ -24,7 +39,7 @@ incorrect = 0
 tested = 0
 
 #get rows to test on
-db.cur.execute("SELECT * FROM migration WHERE train = 0;")
+db.cur.execute("SELECT * FROM migration WHERE train = 0 LIMIT "+str(int(start))+", "+str(int(num_records))+";")
 migrations = db.cur.fetchall()
 
 for migration in migrations:
@@ -76,8 +91,14 @@ for migration in migrations:
                                                      "VALUES (%s, %s, %s, %s) "+
                                                      "ON DUPLICATE KEY UPDATE result_visit_id = %s, correct = %s, prob = %s;",
                                                      (migration_id, result_visit_id, correct_bit, prob, result_visit_id, correct_bit, prob));
-    db.conn.commit()
-    db.close_db_conn()
-    exit()
+    
+global_end_time = time.time()
+print 'at the end:'
+print 'correct: '+str(correct)
+print 'incorrect: '+str(incorrect)
+print 'tested: '+str(tested)
+print "Elapsed time was %g seconds" % (global_end_time - global_start_time)
 
+
+db.conn.commit()
 db.close_db_conn()
