@@ -70,18 +70,18 @@ for migration in migrations:
         software_version1 = 'None'
         for software1 in softwares1:
             if software1[2] == software_type and software1[3] == software_name:
-                print 'found1'
+                #print 'found1'
                 software_version1 = software1[4]
                 break
             
         software_version2 = 'None'
         for software2 in softwares2:
             if software2[2] == software_type and software2[3] == software_name:
-                print 'found2'
+                #print 'found2'
                 software_version2 = software2[4]
                 break
-        print software_version1
-        print software_version2
+        #print software_version1
+        #print software_version2
         
         #insert #(x0=a AND x1=b)
         db.cur.execute("INSERT INTO migration_total (type, name, version1, version2, count) "+

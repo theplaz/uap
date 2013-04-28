@@ -37,10 +37,13 @@ print count
 rounds = int(math.ceil(count/float(config.ROWS_PER_RUN)))
 print rounds
 
+print '##### migrator.py #####'
+print str(count)+' rows, so '+str(rounds)+' rounds'
 for i in range(rounds):
     round = i * config.ROWS_PER_RUN
     print "python migrator.py "+str(round)+" "+str(config.ROWS_PER_RUN)
     os.system("python migrator.py "+str(round)+" "+str(config.ROWS_PER_RUN))
+db.conn.commit()
     
 ##### builder1.py ####
 db.cur.execute("SELECT COUNT(*) FROM software;")
@@ -50,10 +53,13 @@ print count
 rounds = int(math.ceil(count/float(config.ROWS_PER_RUN)))
 print rounds
 
+print '##### builder1.py #####'
+print str(count)+' rows, so '+str(rounds)+' rounds'
 for i in range(rounds):
     round = i * config.ROWS_PER_RUN
     print "python builder1.py "+str(round)+" "+str(config.ROWS_PER_RUN)
     os.system("python builder1.py "+str(round)+" "+str(config.ROWS_PER_RUN))
+db.conn.commit()
 
 ##### builder2.py ####
 db.cur.execute("SELECT COUNT(DISTINCT cookie_id) FROM visit;")
@@ -63,10 +69,13 @@ print count
 rounds = int(math.ceil(count/float(config.ROWS_PER_RUN)))
 print rounds
 
+print '##### builder2.py #####'
+print str(count)+' rows, so '+str(rounds)+' rounds'
 for i in range(rounds):
     round = i * config.ROWS_PER_RUN
     print "python builder2.py "+str(round)+" "+str(config.ROWS_PER_RUN)
     os.system("python builder2.py "+str(round)+" "+str(config.ROWS_PER_RUN))
+db.conn.commit()
     
 ##### builder3.py ####
 db.cur.execute("SELECT COUNT(*) FROM migration WHERE train = 1;")
@@ -76,10 +85,13 @@ print count
 rounds = int(math.ceil(count/float(config.ROWS_PER_RUN)))
 print rounds
 
+print '##### builder3.py #####'
+print str(count)+' rows, so '+str(rounds)+' rounds'
 for i in range(rounds):
     round = i * config.ROWS_PER_RUN
     print "python builder3.py "+str(round)+" "+str(config.ROWS_PER_RUN)
     os.system("python builder3.py "+str(round)+" "+str(config.ROWS_PER_RUN))
+db.conn.commit()
 
 ##### builder4.py ####
 db.cur.execute("SELECT COUNT(*) FROM migration_total;")
@@ -89,11 +101,13 @@ print count
 rounds = int(math.ceil(count/float(config.ROWS_PER_RUN)))
 print rounds
 
+print '##### builder4.py #####'
+print str(count)+' rows, so '+str(rounds)+' rounds'
 for i in range(rounds):
     round = i * config.ROWS_PER_RUN
     print "python builder4.py "+str(round)+" "+str(config.ROWS_PER_RUN)
     os.system("python builder4.py "+str(round)+" "+str(config.ROWS_PER_RUN))
-    
+db.conn.commit()
     
 db.conn.commit()
 db.close_db_conn()

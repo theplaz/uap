@@ -39,7 +39,7 @@ software_instances = db.cur.fetchall()
 i = 0
 row_total = len(software_instances)
 for software_instance in software_instances:
-    print software_instance
+    #print software_instance
     software_instance_type = software_instance[0]
     software_instance_name = software_instance[1]
     software_instance_version = software_instance[2]

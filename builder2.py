@@ -61,7 +61,7 @@ for user in users:
     else:
         db.cur.execute("SELECT id, fonts, timestamp FROM visit WHERE cookie_id = %s ORDER BY timestamp ASC;", user[0].strip())
         fingerprints = db.cur.fetchall()
-        print len(fingerprints)
+        #print len(fingerprints)
         
         #save pairs where time > 1 hr
         if len(fingerprints) == 1: #if == 1 then just skip (visitor only came once)
@@ -95,7 +95,7 @@ for user in users:
                         print 'added migration for user: '+str(cookie_id)
                 j+=1
     i += 1
-    print "done builder3 "+str(i)+" of "+str(row_total)
+    print "done builder2 "+str(i)+" of "+str(row_total)
     
 db.conn.commit()
 db.close_db_conn()

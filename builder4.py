@@ -40,7 +40,7 @@ i = 0
 row_total = len(migration_pairs)
 print row_total
 for migration_pair in migration_pairs:
-    print migration_pair
+    #print migration_pair
     type = migration_pair[0]
     name = migration_pair[1]
     version1 = migration_pair[2]
@@ -49,12 +49,8 @@ for migration_pair in migration_pairs:
     #print count_PaANDb
     
     #look up software total #(x1=b)
-    print type
-    print name
-    print version2
     db.cur.execute("SELECT count FROM software_total WHERE type = %s AND name = %s AND version = %s;", (type, name, version2));
     software_total = db.cur.fetchone()
-    print software_total
     count_Pa = software_total[0]
     #print count_Pa
     

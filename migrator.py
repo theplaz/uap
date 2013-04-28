@@ -40,22 +40,20 @@ i = 0
 row_total = len(visits)
 for visit in visits:
     if visit != None:
-        print visit[2].strip()
         visit_id = visit[0]
         cookie_id = visit[1].strip()
         signature = visit[2].strip()
         ip = visit[3]
         ip34 = visit[4]
         timestamp = visit[5]
-    
+        #print signature
         
         #get the fingerprint info
         db.orig_cur.execute("SELECT * FROM fingerprint WHERE signature = %s;", visit[2].strip())
         fingerprint = db.orig_cur.fetchone()
-        print fingerprint
+        #print fingerprint
         fingerprint_user_agent = fingerprint[2]
         fingerprint_plugins = fingerprint[4]
-        print visit
         
         
         #load into new table
@@ -71,16 +69,14 @@ for visit in visits:
         
         
         #load software version table
-        
         #load user agent
-        print fingerprint_user_agent
+        #print fingerprint_user_agent
         fingerprint_user_agent = fingerprint_user_agent.replace('(',';').replace(')',';').split(';')
         user_agent = []
         for agent in fingerprint_user_agent:
-            print agent.strip()
             if agent != '':
                 user_agent.append(agent.strip())
-        print user_agent
+        #print user_agent
         
         for agent in user_agent:
             #match browsers
@@ -140,9 +136,10 @@ for visit in visits:
                 
                 #load into software table
                 db.add_software(visit[0], visit[1], 'plugin', name, version)
+            elif parts == ['']:
+                pass
             else:
-                print 'error'
-                print parts
+                print 'error' +str(parts)
     
     i += 1
     print "done migrator "+str(i)+" of "+str(row_total)

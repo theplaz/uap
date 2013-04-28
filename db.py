@@ -52,4 +52,4 @@ def add_software(visit_id, cookie_id, type, name, version):
     cur.execute("INSERT IGNORE INTO software (visit_id, cookie_id, type, name, version) "+
                     "VALUES (%s, %s, %s, %s, %s)", 
                     (visit_id, cookie_id, type, name, version));
-    print 'added '+type+': '+name+' @ '+version+''
+    #print 'added '+type+': '+name+' @ '+version+''

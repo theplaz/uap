@@ -19,8 +19,8 @@ def fontscompare(a, b):
     for font in b:
         font = font.strip()
         
-    print a
-    print b
+    #print a
+    #print b
     
     #remove if in both lists
     for font in a:
@@ -36,8 +36,8 @@ def fontscompare(a, b):
              
     #a are the ones removed
     #b are the ones added
-    print a
-    print b
-    print len(a)
-    print len(b)
+    #print a
+    #print b
+    #print len(a)
+    #print len(b)
     return [len(a),len(b)]
