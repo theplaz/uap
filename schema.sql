@@ -148,4 +148,5 @@ CREATE TABLE IF NOT EXISTS `visit` (
   `ip34` varbinary(16) DEFAULT NULL,
   `timestamp` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
+  KEY `cookie_id` (`cookie_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
