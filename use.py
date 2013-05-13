@@ -102,10 +102,10 @@ def find_original_visit(visit_to):
                     db.cur.execute("SELECT count FROM software_total WHERE type = %s AND name = %s AND version = %s;", (type, name, version2));
                     software_total = db.cur.fetchone()
                     if software_total is None: #if we've never seen this state before...
-                        count_Pa = 0
+                        count_Pb = 0
                     else:
-                        count_Pa = software_total[0]
-                    #print count_Pa
+                        count_Pb = software_total[0]
+                    #print count_Pb
                     
                     #look up # of states for that software
                     db.cur.execute("SELECT COUNT(*) FROM software_total WHERE type = %s AND name = %s", (type, name));
@@ -113,7 +113,7 @@ def find_original_visit(visit_to):
                     count_states = states[0]
                     #print count_states
                     
-                    Pba_laplace = 1 / float((count_Pa + count_states))
+                    Pba_laplace = 1 / float((count_Pb + count_states))
                     #print Pba_laplace
                 else:
                     Pba_laplace = estimate[1]

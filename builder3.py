@@ -47,14 +47,14 @@ for migration_pair in migration_pairs:
     name = migration_pair[1]
     version1 = migration_pair[2]
     version2 = migration_pair[3]
-    count_PaANDb = migration_pair[4]
-    #print count_PaANDb
+    count_PbANDb = migration_pair[4]
+    #print count_PbANDb
     
     #look up software total #(x1=b)
     db.cur.execute("SELECT count FROM software_total WHERE type = %s AND name = %s AND version = %s;", (type, name, version2));
     software_total = db.cur.fetchone()
-    count_Pa = software_total[0]
-    #print count_Pa
+    count_Pb = software_total[0]
+    #print count_Pb
     
     #look up # of states for that software
     db.cur.execute("SELECT COUNT(*) FROM software_total WHERE type = %s AND name = %s", (type, name));
@@ -62,10 +62,10 @@ for migration_pair in migration_pairs:
     count_states = states[0]
     #print count_states
     
-    Pba = count_PaANDb / float(count_Pa)
+    Pba = count_PbANDb / float(count_Pb)
     #print Pba
     
-    Pba_laplace = (count_PaANDb + 1) / float((count_Pa + count_states))
+    Pba_laplace = (count_PbANDb + 1) / float((count_Pb + count_states))
     #print Pba_laplace
     
     #insert
